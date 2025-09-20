@@ -219,7 +219,7 @@ const AdminDashboard = () => {
 
             <div className="space-y-4 max-h-96 overflow-y-auto">
               {myQuizzes.length > 0 ? (
-                myQuizzes.map((quiz) => (
+                myQuizzes.slice(0, 5).map((quiz) => (
                   <div key={quiz.quizId} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -251,27 +251,6 @@ const AdminDashboard = () => {
                       <div className="flex items-center space-x-2 ml-4">
                         <button
                           onClick={() => handleViewResults(quiz.quizId)}
-                          className="text-blue-600 hover:text-blue-900"
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              <TrendingUp className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p>No quiz activity yet</p>
-              <p className="text-sm mt-1">Create some quizzes to see activity here</p>
-            </div>
-          )}
-        </div>
-      </div>
-    </Layout>
-  );
-};
-
-export default AdminDashboard;={() => handleViewResults(quiz.quizId)}
                           className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                           title="View Results"
                         >
@@ -310,6 +289,17 @@ export default AdminDashboard;={() => handleViewResults(quiz.quizId)}
                 </div>
               )}
             </div>
+
+            {myQuizzes.length > 5 && (
+              <div className="mt-4 text-center">
+                <button
+                  onClick={() => navigate('/admin/quizzes')}
+                  className="text-purple-600 hover:text-purple-800 font-medium"
+                >
+                  View all quizzes →
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Quick Actions */}
@@ -358,24 +348,11 @@ export default AdminDashboard;={() => handleViewResults(quiz.quizId)}
                   <div className="text-sm text-gray-600">Check top performing students</div>
                 </div>
               </button>
-
-              <button
-                onClick={() => navigate('/admin/analytics')}
-                className="w-full flex items-center p-4 bg-gradient-to-r from-orange-50 to-red-50 hover:from-orange-100 hover:to-red-100 rounded-lg transition-all duration-200 border border-orange-200"
-              >
-                <div className="p-3 bg-orange-100 rounded-lg mr-4">
-                  <TrendingUp className="w-6 h-6 text-orange-600" />
-                </div>
-                <div className="text-left">
-                  <div className="font-semibold text-gray-900">Analytics</div>
-                  <div className="text-sm text-gray-600">Deep dive into quiz analytics</div>
-                </div>
-              </button>
             </div>
           </div>
         </div>
 
-        {/* Recent Activity */}
+        {/* Recent Activity Table */}
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
             <TrendingUp className="w-6 h-6 mr-2 text-green-600" />
@@ -436,4 +413,28 @@ export default AdminDashboard;={() => handleViewResults(quiz.quizId)}
                           Edit
                         </button>
                         <button
-                          onClick
+                          onClick={() => handleViewResults(quiz.quizId)}
+                          className="text-green-600 hover:text-green-900"
+                        >
+                          Results
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <TrendingUp className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <p>No quiz activity yet</p>
+              <p className="text-sm mt-1">Create some quizzes to see activity here</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </Layout>
+  );
+};
+
+export default AdminDashboard;

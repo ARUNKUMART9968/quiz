@@ -1,68 +1,217 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+/* src/App.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+/* Custom base styles */
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
-  a:hover {
-    color: #747bff;
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    @apply min-h-screen;
   }
-  button {
-    background-color: #f9f9f9;
+
+  code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+      monospace;
+  }
+}
+
+/* Custom component classes */
+@layer components {
+  .gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl p-6 shadow-lg transition-all duration-300;
+  }
+
+  .card:hover {
+    @apply -translate-y-1 shadow-xl;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-medium no-underline transition-all duration-200 cursor-pointer border-0 text-sm;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    @apply text-white;
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    @apply -translate-y-0.5;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-50 text-gray-700 border border-gray-200;
+  }
+
+  .btn-secondary:hover {
+    @apply bg-gray-100;
+  }
+
+  .btn-success {
+    @apply bg-green-500 text-white;
+  }
+
+  .btn-success:hover {
+    @apply bg-green-600;
+  }
+
+  .btn-danger {
+    @apply bg-red-500 text-white;
+  }
+
+  .btn-danger:hover {
+    @apply bg-red-600;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg text-sm transition-all duration-200;
+  }
+
+  .input-field:focus {
+    @apply outline-none border-indigo-500 ring-2 ring-indigo-100;
+  }
+
+  .quiz-card {
+    @apply bg-white rounded-2xl p-6 shadow-md transition-all duration-300 border-2 border-transparent;
+  }
+
+  .quiz-card:hover {
+    @apply -translate-y-1 shadow-xl border-indigo-500;
+  }
+
+  .quiz-card.active {
+    @apply border-green-500 bg-gradient-to-br from-green-50 to-gray-50;
+  }
+
+  .quiz-card.inactive {
+    @apply border-gray-300 bg-gray-50 opacity-80;
+  }
+
+  .progress-bar {
+    @apply w-full h-2 bg-gray-200 rounded-sm overflow-hidden;
+  }
+
+  .progress-fill {
+    @apply h-full rounded-sm transition-all duration-300;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .leaderboard-item {
+    @apply flex items-center p-4 bg-white rounded-xl mb-2 transition-all duration-200 border-2 border-transparent;
+  }
+
+  .leaderboard-item:hover {
+    @apply translate-x-1 border-indigo-500;
+  }
+
+  .leaderboard-item.gold {
+    background: linear-gradient(135deg, #fef5e7 0%, #f6e05e 100%);
+    @apply border-yellow-500;
+  }
+
+  .leaderboard-item.silver {
+    background: linear-gradient(135deg, #f7fafc 0%, #cbd5e0 100%);
+    @apply border-gray-400;
+  }
+
+  .leaderboard-item.bronze {
+    background: linear-gradient(135deg, #fed7cc 0%, #f6ad55 100%);
+    @apply border-orange-500;
+  }
+}
+
+/* Custom utility classes */
+@layer utilities {
+  .fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  .max-h-90vh {
+    max-height: 90vh;
+  }
+
+  /* Quiz-specific utilities */
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .bg-gradient-secondary {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  }
+
+  .bg-gradient-success {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Performance indicator colors */
+  .performance-excellent {
+    @apply bg-green-100 text-green-800 border-green-200;
+  }
+
+  .performance-good {
+    @apply bg-blue-100 text-blue-800 border-blue-200;
+  }
+
+  .performance-average {
+    @apply bg-yellow-100 text-yellow-800 border-yellow-200;
+  }
+
+  .performance-poor {
+    @apply bg-red-100 text-red-800 border-red-200;
+  }
+
+  /* Interactive states */
+  .hover-lift {
+    @apply transition-transform duration-200 hover:-translate-y-1;
+  }
+
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-105;
+  }
+
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2;
+  }
+}
+
+/* Custom keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

@@ -1,4 +1,4 @@
-// src/components/student/QuizPlay.js
+// src/components/student/QuizPlay.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -194,6 +194,18 @@ const QuizPlay = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="text-center p-4 bg-blue-50 rounded-lg">
+                <Clock className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+                <div className="text-lg font-semibold text-gray-900">{quiz.duration} Minutes</div>
+                <div className="text-sm text-gray-600">Time Limit</div>
+              </div>
+              
+              <div className="text-center p-4 bg-green-50 rounded-lg">
+                <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
+                <div className="text-lg font-semibold text-gray-900">{quiz.questions.length} Questions</div>
+                <div className="text-sm text-gray-600">Total Questions</div>
+              </div>
+              
               <div className="text-center p-4 bg-purple-50 rounded-lg">
                 <Flag className="w-8 h-8 text-purple-600 mx-auto mb-2" />
                 <div className="text-lg font-semibold text-gray-900">Single Attempt</div>
@@ -417,16 +429,4 @@ const QuizPlay = () => {
   );
 };
 
-export default QuizPlay; p-4 bg-blue-50 rounded-lg">
-                <Clock className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                <div className="text-lg font-semibold text-gray-900">{quiz.duration} Minutes</div>
-                <div className="text-sm text-gray-600">Time Limit</div>
-              </div>
-              
-              <div className="text-center p-4 bg-green-50 rounded-lg">
-                <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                <div className="text-lg font-semibold text-gray-900">{quiz.questions.length} Questions</div>
-                <div className="text-sm text-gray-600">Total Questions</div>
-              </div>
-              
-              <div className="text-center
+export default QuizPlay;

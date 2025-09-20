@@ -1,4 +1,4 @@
-// src/App.js
+// src/App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
@@ -16,6 +16,7 @@ import AdminResults from './components/admin/AdminResults';
 import AdminLeaderboard from './components/admin/AdminLeaderboard';
 import { Toaster } from 'react-hot-toast';
 import './App.css';
+import './index.css';
 
 function App() {
   return (
