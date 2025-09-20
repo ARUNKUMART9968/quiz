@@ -15,7 +15,6 @@ import QuestionManagement from './components/admin/QuestionManagement';
 import AdminResults from './components/admin/AdminResults';
 import AdminLeaderboard from './components/admin/AdminLeaderboard';
 import { Toaster } from 'react-hot-toast';
-import './App.css';
 import './index.css';
 
 function App() {

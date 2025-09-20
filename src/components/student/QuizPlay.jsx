@@ -29,156 +29,82 @@ const QuizPlay = () => {
   const [submitting, setSubmitting] = useState(false);
   const [quizStarted, setQuizStarted] = useState(false);
 
-  const handleSubmitQuiz = useCallback(async (isTimeUp = false) => {
-    if (submitting) return;
-    
-    setSubmitting(true);
-    const endTime = new Date();
+// Fixed handleSubmitQuiz function in QuizPlay.jsx
 
-    try {
-      const submissionData = {
-        answers: Object.entries(answers).map(([questionId, selectedAnswer]) => ({
-          questionId: parseInt(questionId),
-          selectedAnswer: selectedAnswer
-        })),
-        startTime: startTime.toISOString(),
-        endTime: endTime.toISOString()
-      };
+const handleSubmitQuiz = useCallback(async (isTimeUp = false) => {
+  if (submitting) return;
+  
+  setSubmitting(true);
+  const endTime = new Date();
 
-      const response = await apiService.quiz.submit(id, submissionData, token);
-      
-      if (response.success) {
-        if (isTimeUp) {
-          toast.success('Time\'s up! Quiz submitted automatically.');
-        } else {
-          toast.success('Quiz submitted successfully!');
-        }
-        
-        // Navigate to results page
-        navigate('/student/results', { 
-          state: { 
-            newResult: response.data,
-            showResult: true 
-          } 
-        });
-      } else {
-        throw new Error(response.message);
-      }
-    } catch (error) {
-      toast.error('Failed to submit quiz. Please try again.');
-      console.error('Submit error:', error);
-      setSubmitting(false);
-    }
-  }, [answers, startTime, id, token, navigate, submitting]);
-
-  useEffect(() => {
-    const fetchQuiz = async () => {
-      try {
-        const response = await apiService.quiz.getById(id, token);
-        
-        if (response.success) {
-          setQuiz(response.data);
-          setTimeLeft(response.data.duration * 60); // Convert minutes to seconds
-        } else {
-          toast.error('Quiz not found');
-          navigate('/student');
-        }
-      } catch (error) {
-        toast.error('Failed to load quiz');
-        navigate('/student');
-      } finally {
-        setLoading(false);
-      }
+  try {
+    // Format answers according to backend SubmitAnswersDto
+    const submissionData = {
+      answers: Object.entries(answers).map(([questionId, selectedAnswer]) => ({
+        questionId: parseInt(questionId),
+        selectedAnswer: selectedAnswer || '' // Ensure it's not null/undefined
+      })),
+      startTime: startTime.toISOString(),
+      endTime: endTime.toISOString()
     };
 
-    fetchQuiz();
-  }, [id, token, navigate]);
+    console.log('Submitting quiz with data:', submissionData); // Debug log
+    console.log('Quiz ID:', id, 'Token:', token ? 'Present' : 'Missing'); // Debug log
 
-  // Timer effect
-  useEffect(() => {
-    if (!quizStarted || timeLeft <= 0) return;
-
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          handleSubmitQuiz(true);
-          return 0;
-        }
-        return prev - 1;
+    const response = await apiService.quiz.submit(id, submissionData, token);
+    console.log('Submit quiz response:', response); // Debug log
+    
+    if (response.success) {
+      if (isTimeUp) {
+        toast.success('Time\'s up! Quiz submitted automatically.');
+      } else {
+        toast.success('Quiz submitted successfully!');
+      }
+      
+      // Navigate to results page
+      navigate('/student/results', { 
+        state: { 
+          newResult: response.data,
+          showResult: true 
+        } 
       });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [quizStarted, timeLeft, handleSubmitQuiz]);
-
-  const startQuiz = () => {
-    setQuizStarted(true);
-    setStartTime(new Date());
-  };
-
-  const handleAnswerChange = (questionId, selectedAnswer) => {
-    setAnswers(prev => ({
-      ...prev,
-      [questionId]: selectedAnswer
-    }));
-  };
-
-  const goToQuestion = (index) => {
-    setCurrentQuestionIndex(index);
-  };
-
-  const goToNext = () => {
-    if (currentQuestionIndex < quiz.questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    } else {
+      console.error('Quiz submission failed:', response);
+      toast.error(response.message || response.error || 'Failed to submit quiz');
+      setSubmitting(false);
     }
-  };
-
-  const goToPrevious = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
-    }
-  };
-
-  const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
-
-  const getAnsweredCount = () => {
-    return Object.keys(answers).length;
-  };
-
-  const isQuestionAnswered = (questionId) => {
-    return answers.hasOwnProperty(questionId);
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
-      </div>
-    );
+  } catch (error) {
+    console.error('Submit error:', error);
+    toast.error(error.message || 'Failed to submit quiz. Please try again.');
+    setSubmitting(false);
   }
+}, [answers, startTime, id, token, navigate, submitting]);
 
-  if (!quiz) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-        <div className="text-center">
-          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Quiz Not Found</h2>
-          <p className="text-gray-600 mb-4">The quiz you're looking for doesn't exist.</p>
-          <button
-            onClick={() => navigate('/student')}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-          >
-            Go Back to Dashboard
-          </button>
-        </div>
-      </div>
-    );
+// Also add better validation before submission
+const validateSubmission = () => {
+  if (!answers || Object.keys(answers).length === 0) {
+    toast.error('Please answer at least one question before submitting.');
+    return false;
   }
+  
+  if (!startTime) {
+    toast.error('Invalid quiz session. Please restart the quiz.');
+    return false;
+  }
+  
+  return true;
+};
 
+// Update the submit button click handler
+const handleFinalSubmit = () => {
+  if (!validateSubmission()) {
+    return;
+  }
+  
+  if (window.confirm('Are you sure you want to submit your quiz? This action cannot be undone.')) {
+    handleSubmitQuiz(false);
+  }
+};
   // Quiz start screen
   if (!quizStarted) {
     return (

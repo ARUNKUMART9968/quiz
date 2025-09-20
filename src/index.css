@@ -1,8 +1,6 @@
-/* src/App.css */
+/* src/index.css - Fixed for Tailwind v4 */
+@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 /* Custom base styles */
 @layer base {
@@ -18,7 +16,7 @@
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    @apply min-h-screen;
+    min-height: 100vh;
   }
 
   code {
@@ -27,181 +25,264 @@
   }
 }
 
-/* Custom component classes */
-@layer components {
-  .gradient-bg {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  }
+/* Custom component classes - Using standard CSS instead of @apply */
+.gradient-bg {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
 
-  .gradient-text {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+.gradient-text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
-  .card {
-    @apply bg-white rounded-2xl p-6 shadow-lg transition-all duration-300;
-  }
+.card {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
 
-  .card:hover {
-    @apply -translate-y-1 shadow-xl;
-  }
+.card:hover {
+  transform: translateY(-0.25rem);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
 
-  .btn {
-    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-medium no-underline transition-all duration-200 cursor-pointer border-0 text-sm;
-  }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+  cursor: pointer;
+  border: 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
 
-  .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    @apply text-white;
-  }
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
 
-  .btn-primary:hover {
-    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
-    @apply -translate-y-0.5;
-  }
+.btn-primary:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  transform: translateY(-0.125rem);
+}
 
-  .btn-secondary {
-    @apply bg-gray-50 text-gray-700 border border-gray-200;
-  }
+.btn-secondary {
+  background-color: rgb(249 250 251);
+  color: rgb(55 65 81);
+  border: 1px solid rgb(229 231 235);
+}
 
-  .btn-secondary:hover {
-    @apply bg-gray-100;
-  }
+.btn-secondary:hover {
+  background-color: rgb(243 244 246);
+}
 
-  .btn-success {
-    @apply bg-green-500 text-white;
-  }
+.btn-success {
+  background-color: rgb(34 197 94);
+  color: white;
+}
 
-  .btn-success:hover {
-    @apply bg-green-600;
-  }
+.btn-success:hover {
+  background-color: rgb(22 163 74);
+}
 
-  .btn-danger {
-    @apply bg-red-500 text-white;
-  }
+.btn-danger {
+  background-color: rgb(239 68 68);
+  color: white;
+}
 
-  .btn-danger:hover {
-    @apply bg-red-600;
-  }
+.btn-danger:hover {
+  background-color: rgb(220 38 38);
+}
 
-  .input-field {
-    @apply w-full px-4 py-3 border border-gray-300 rounded-lg text-sm transition-all duration-200;
-  }
+.input-field {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgb(209 213 219);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
 
-  .input-field:focus {
-    @apply outline-none border-indigo-500 ring-2 ring-indigo-100;
-  }
+.input-field:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  border-color: rgb(99 102 241);
+  box-shadow: 0 0 0 2px rgb(165 180 252 / 0.2);
+}
 
-  .quiz-card {
-    @apply bg-white rounded-2xl p-6 shadow-md transition-all duration-300 border-2 border-transparent;
-  }
+.quiz-card {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+  border: 2px solid transparent;
+}
 
-  .quiz-card:hover {
-    @apply -translate-y-1 shadow-xl border-indigo-500;
-  }
+.quiz-card:hover {
+  transform: translateY(-0.25rem);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  border-color: rgb(99 102 241);
+}
 
-  .quiz-card.active {
-    @apply border-green-500 bg-gradient-to-br from-green-50 to-gray-50;
-  }
+.quiz-card.active {
+  border-color: rgb(34 197 94);
+  background: linear-gradient(to bottom right, rgb(240 253 244), rgb(249 250 251));
+}
 
-  .quiz-card.inactive {
-    @apply border-gray-300 bg-gray-50 opacity-80;
-  }
+.quiz-card.inactive {
+  border-color: rgb(209 213 219);
+  background-color: rgb(249 250 251);
+  opacity: 0.8;
+}
 
-  .progress-bar {
-    @apply w-full h-2 bg-gray-200 rounded-sm overflow-hidden;
-  }
+.progress-bar {
+  width: 100%;
+  height: 0.5rem;
+  background-color: rgb(229 231 235);
+  border-radius: 0.125rem;
+  overflow: hidden;
+}
 
-  .progress-fill {
-    @apply h-full rounded-sm transition-all duration-300;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-  }
+.progress-fill {
+  height: 100%;
+  border-radius: 0.125rem;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
 
-  .leaderboard-item {
-    @apply flex items-center p-4 bg-white rounded-xl mb-2 transition-all duration-200 border-2 border-transparent;
-  }
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background-color: white;
+  border-radius: 0.75rem;
+  margin-bottom: 0.5rem;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+  border: 2px solid transparent;
+}
 
-  .leaderboard-item:hover {
-    @apply translate-x-1 border-indigo-500;
-  }
+.leaderboard-item:hover {
+  transform: translateX(0.25rem);
+  border-color: rgb(99 102 241);
+}
 
-  .leaderboard-item.gold {
-    background: linear-gradient(135deg, #fef5e7 0%, #f6e05e 100%);
-    @apply border-yellow-500;
-  }
+.leaderboard-item.gold {
+  background: linear-gradient(135deg, #fef5e7 0%, #f6e05e 100%);
+  border-color: rgb(234 179 8);
+}
 
-  .leaderboard-item.silver {
-    background: linear-gradient(135deg, #f7fafc 0%, #cbd5e0 100%);
-    @apply border-gray-400;
-  }
+.leaderboard-item.silver {
+  background: linear-gradient(135deg, #f7fafc 0%, #cbd5e0 100%);
+  border-color: rgb(156 163 175);
+}
 
-  .leaderboard-item.bronze {
-    background: linear-gradient(135deg, #fed7cc 0%, #f6ad55 100%);
-    @apply border-orange-500;
-  }
+.leaderboard-item.bronze {
+  background: linear-gradient(135deg, #fed7cc 0%, #f6ad55 100%);
+  border-color: rgb(249 115 22);
 }
 
 /* Custom utility classes */
-@layer utilities {
-  .fade-in {
-    animation: fadeIn 0.3s ease-in-out;
-  }
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
 
-  .max-h-90vh {
-    max-height: 90vh;
-  }
+.max-h-90vh {
+  max-height: 90vh;
+}
 
-  /* Quiz-specific utilities */
-  .bg-gradient-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  }
+/* Quiz-specific utilities */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
 
-  .bg-gradient-secondary {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  }
+.bg-gradient-secondary {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
 
-  .bg-gradient-success {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  }
+.bg-gradient-success {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
 
-  .text-gradient {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+.text-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
-  /* Performance indicator colors */
-  .performance-excellent {
-    @apply bg-green-100 text-green-800 border-green-200;
-  }
+/* Performance indicator colors */
+.performance-excellent {
+  background-color: rgb(220 252 231);
+  color: rgb(22 101 52);
+  border-color: rgb(187 247 208);
+}
 
-  .performance-good {
-    @apply bg-blue-100 text-blue-800 border-blue-200;
-  }
+.performance-good {
+  background-color: rgb(219 234 254);
+  color: rgb(30 64 175);
+  border-color: rgb(147 197 253);
+}
 
-  .performance-average {
-    @apply bg-yellow-100 text-yellow-800 border-yellow-200;
-  }
+.performance-average {
+  background-color: rgb(254 249 195);
+  color: rgb(133 77 14);
+  border-color: rgb(254 240 138);
+}
 
-  .performance-poor {
-    @apply bg-red-100 text-red-800 border-red-200;
-  }
+.performance-poor {
+  background-color: rgb(254 226 226);
+  color: rgb(153 27 27);
+  border-color: rgb(252 165 165);
+}
 
-  /* Interactive states */
-  .hover-lift {
-    @apply transition-transform duration-200 hover:-translate-y-1;
-  }
+/* Interactive states */
+.hover-lift {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
 
-  .hover-scale {
-    @apply transition-transform duration-200 hover:scale-105;
-  }
+.hover-lift:hover {
+  transform: translateY(-0.25rem);
+}
 
-  .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2;
-  }
+.hover-scale {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.focus-ring:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px rgb(99 102 241), 0 0 0 4px rgb(165 180 252 / 0.5);
 }
 
 /* Custom keyframes */

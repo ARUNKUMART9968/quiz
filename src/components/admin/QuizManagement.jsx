@@ -51,12 +51,16 @@ const QuizManagement = () => {
   const fetchQuizzes = async () => {
     try {
       setLoading(true);
+      console.log('Fetching quizzes with token:', token ? 'Present' : 'Missing');
+      
       const response = await apiService.quiz.getMyQuizzes(token);
+      console.log('Fetch quizzes response:', response);
       
       if (response.success) {
-        setQuizzes(response.data);
+        setQuizzes(response.data || []);
       } else {
-        toast.error('Failed to fetch quizzes');
+        toast.error(response.message || 'Failed to fetch quizzes');
+        console.error('Failed to fetch quizzes:', response);
       }
     } catch (error) {
       toast.error('Failed to fetch quizzes');
@@ -73,7 +77,7 @@ const QuizManagement = () => {
     if (searchTerm) {
       filtered = filtered.filter(quiz =>
         quiz.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        quiz.description.toLowerCase().includes(searchTerm.toLowerCase())
+        (quiz.description && quiz.description.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
 
@@ -85,71 +89,6 @@ const QuizManagement = () => {
     }
 
     setFilteredQuizzes(filtered);
-  };
-
-  const handleCreateQuiz = async (e) => {
-    e.preventDefault();
-    
-    try {
-      const response = await apiService.quiz.create(formData, token);
-      
-      if (response.success) {
-        toast.success('Quiz created successfully');
-        setQuizzes([response.data, ...quizzes]);
-        setShowCreateModal(false);
-        resetForm();
-        
-        // Navigate to question management for the new quiz
-        navigate(`/admin/quiz/${response.data.quizId}/questions`);
-      } else {
-        toast.error(response.message || 'Failed to create quiz');
-      }
-    } catch (error) {
-      toast.error('Failed to create quiz');
-      console.error('Create error:', error);
-    }
-  };
-
-  const handleUpdateQuiz = async (e) => {
-    e.preventDefault();
-    
-    try {
-      const response = await apiService.quiz.update(editingQuiz.quizId, formData, token);
-      
-      if (response.success) {
-        toast.success('Quiz updated successfully');
-        setQuizzes(quizzes.map(quiz => 
-          quiz.quizId === editingQuiz.quizId ? response.data : quiz
-        ));
-        setEditingQuiz(null);
-        resetForm();
-      } else {
-        toast.error(response.message || 'Failed to update quiz');
-      }
-    } catch (error) {
-      toast.error('Failed to update quiz');
-      console.error('Update error:', error);
-    }
-  };
-
-  const handleDeleteQuiz = async (quiz) => {
-    if (!window.confirm(`Are you sure you want to delete "${quiz.title}"? This action cannot be undone.`)) {
-      return;
-    }
-
-    try {
-      const response = await apiService.quiz.delete(quiz.quizId, token);
-      
-      if (response.success) {
-        toast.success('Quiz deleted successfully');
-        setQuizzes(quizzes.filter(q => q.quizId !== quiz.quizId));
-      } else {
-        toast.error('Failed to delete quiz');
-      }
-    } catch (error) {
-      toast.error('Failed to delete quiz');
-      console.error('Delete error:', error);
-    }
   };
 
   const resetForm = () => {
@@ -188,6 +127,108 @@ const QuizManagement = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+  };
+
+  const handleCreateQuiz = async (e) => {
+    e.preventDefault();
+    
+    // Basic validation
+    if (!formData.title.trim()) {
+      toast.error('Quiz title is required');
+      return;
+    }
+    
+    if (formData.duration < 1 || formData.duration > 300) {
+      toast.error('Duration must be between 1 and 300 minutes');
+      return;
+    }
+    
+    try {
+      console.log('Creating quiz with data:', formData);
+      
+      const response = await apiService.quiz.create(formData, token);
+      console.log('Create quiz response:', response);
+      
+      if (response.success) {
+        toast.success('Quiz created successfully');
+        
+        // The response.data should contain the quiz object
+        const newQuiz = response.data;
+        setQuizzes([newQuiz, ...quizzes]);
+        setShowCreateModal(false);
+        resetForm();
+        
+        // Navigate to question management for the new quiz
+        if (newQuiz && newQuiz.quizId) {
+          navigate(`/admin/quiz/${newQuiz.quizId}/questions`);
+        } else {
+          // Fallback: refresh the quiz list
+          await fetchQuizzes();
+        }
+      } else {
+        toast.error(response.message || response.error || 'Failed to create quiz');
+      }
+    } catch (error) {
+      console.error('Create quiz error:', error);
+      toast.error(error.message || 'Failed to create quiz');
+    }
+  };
+
+  const handleUpdateQuiz = async (e) => {
+    e.preventDefault();
+    
+    // Basic validation
+    if (!formData.title.trim()) {
+      toast.error('Quiz title is required');
+      return;
+    }
+    
+    try {
+      console.log('Updating quiz with data:', formData);
+      
+      const response = await apiService.quiz.update(editingQuiz.quizId, formData, token);
+      console.log('Update quiz response:', response);
+      
+      if (response.success) {
+        toast.success('Quiz updated successfully');
+        
+        // Update the quiz in the list
+        const updatedQuiz = response.data;
+        setQuizzes(quizzes.map(quiz => 
+          quiz.quizId === editingQuiz.quizId ? updatedQuiz : quiz
+        ));
+        setEditingQuiz(null);
+        resetForm();
+      } else {
+        toast.error(response.message || response.error || 'Failed to update quiz');
+      }
+    } catch (error) {
+      console.error('Update quiz error:', error);
+      toast.error(error.message || 'Failed to update quiz');
+    }
+  };
+
+  const handleDeleteQuiz = async (quiz) => {
+    if (!window.confirm(`Are you sure you want to delete "${quiz.title}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      console.log('Deleting quiz:', quiz.quizId);
+      
+      const response = await apiService.quiz.delete(quiz.quizId, token);
+      console.log('Delete quiz response:', response);
+      
+      if (response.success) {
+        toast.success('Quiz deleted successfully');
+        setQuizzes(quizzes.filter(q => q.quizId !== quiz.quizId));
+      } else {
+        toast.error(response.message || response.error || 'Failed to delete quiz');
+      }
+    } catch (error) {
+      console.error('Delete quiz error:', error);
+      toast.error(error.message || 'Failed to delete quiz');
+    }
   };
 
   const getStatusColor = (isActive) => {

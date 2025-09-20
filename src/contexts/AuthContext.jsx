@@ -1,4 +1,4 @@
-// src/contexts/AuthContext.jsx - Safe localStorage implementation
+// src/contexts/AuthContext.jsx - Fixed version
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { apiService } from '../services/apiService';
 
@@ -80,49 +80,67 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await apiService.auth.login({ email, password });
+      console.log('Attempting login with:', { email }); // Debug log
       
-      if (response.success) {
+      const response = await apiService.auth.login({ email, password });
+      console.log('Login response:', response); // Debug log
+      
+      if (response.success && response.data) {
+        // Backend returns AuthResponseDto with Token and User properties
         const { token: newToken, user: userData } = response.data;
         
-        setToken(newToken);
-        setUser(userData);
-        
-        // Store safely
-        safeLocalStorage.setItem('token', newToken);
-        safeLocalStorage.setItem('user', JSON.stringify(userData));
-        
-        return { success: true, user: userData };
+        if (newToken && userData) {
+          setToken(newToken);
+          setUser(userData);
+          
+          // Store safely
+          safeLocalStorage.setItem('token', newToken);
+          safeLocalStorage.setItem('user', JSON.stringify(userData));
+          
+          return { success: true, user: userData };
+        } else {
+          console.error('Invalid response structure:', response.data);
+          return { success: false, error: 'Invalid response from server' };
+        }
       } else {
-        return { success: false, error: response.message };
+        return { success: false, error: response.message || response.error || 'Login failed' };
       }
     } catch (error) {
       console.error('Login error:', error);
-      return { success: false, error: 'Login failed. Please try again.' };
+      return { success: false, error: error.message || 'Login failed. Please try again.' };
     }
   };
 
   const register = async (userData) => {
     try {
-      const response = await apiService.auth.register(userData);
+      console.log('Attempting registration with:', { ...userData, password: '[HIDDEN]' }); // Debug log
       
-      if (response.success) {
+      const response = await apiService.auth.register(userData);
+      console.log('Register response:', response); // Debug log
+      
+      if (response.success && response.data) {
+        // Backend returns AuthResponseDto with Token and User properties
         const { token: newToken, user: newUser } = response.data;
         
-        setToken(newToken);
-        setUser(newUser);
-        
-        // Store safely
-        safeLocalStorage.setItem('token', newToken);
-        safeLocalStorage.setItem('user', JSON.stringify(newUser));
-        
-        return { success: true, user: newUser };
+        if (newToken && newUser) {
+          setToken(newToken);
+          setUser(newUser);
+          
+          // Store safely
+          safeLocalStorage.setItem('token', newToken);
+          safeLocalStorage.setItem('user', JSON.stringify(newUser));
+          
+          return { success: true, user: newUser };
+        } else {
+          console.error('Invalid response structure:', response.data);
+          return { success: false, error: 'Invalid response from server' };
+        }
       } else {
-        return { success: false, error: response.message };
+        return { success: false, error: response.message || response.error || 'Registration failed' };
       }
     } catch (error) {
       console.error('Registration error:', error);
-      return { success: false, error: 'Registration failed. Please try again.' };
+      return { success: false, error: error.message || 'Registration failed. Please try again.' };
     }
   };
 
