@@ -17,9 +17,9 @@ export const useApi = (apiCall, dependencies = []) => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await apiCall(...args, token);
-      
+
       if (response.success) {
         setData(response.data);
         return { success: true, data: response.data };
@@ -55,7 +55,7 @@ export const useFetch = (apiCall, dependencies = []) => {
 
   useEffect(() => {
     execute();
-  }, dependencies);
+  }, dependencies); // eslint-disable-line react-hooks/exhaustive-deps
 
   return { data, loading, error, refetch: execute };
 };
@@ -80,46 +80,26 @@ export const useMutation = (apiCall, options = {}) => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await apiCall(...args, token);
-      
+
       if (response.success) {
-        if (showToast && successMessage) {
-          toast.success(successMessage);
-        }
-        
-        if (onSuccess) {
-          onSuccess(response.data);
-        }
-        
+        if (showToast && successMessage) toast.success(successMessage);
+        if (onSuccess) onSuccess(response.data);
         return { success: true, data: response.data };
       } else {
-        const errorMsg = response.message || errorMessage || 'Request failed';
-        setError(errorMsg);
-        
-        if (showToast) {
-          toast.error(errorMsg);
-        }
-        
-        if (onError) {
-          onError(errorMsg);
-        }
-        
-        return { success: false, error: errorMsg };
+        const errMsg = response.message || errorMessage || 'Request failed';
+        setError(errMsg);
+        if (showToast) toast.error(errMsg);
+        if (onError) onError(errMsg);
+        return { success: false, error: errMsg };
       }
     } catch (err) {
-      const errorMsg = err.message || errorMessage || 'An error occurred';
-      setError(errorMsg);
-      
-      if (showToast) {
-        toast.error(errorMsg);
-      }
-      
-      if (onError) {
-        onError(errorMsg);
-      }
-      
-      return { success: false, error: errorMsg };
+      const errMsg = err.message || errorMessage || 'An error occurred';
+      setError(errMsg);
+      if (showToast) toast.error(errMsg);
+      if (onError) onError(errMsg);
+      return { success: false, error: errMsg };
     } finally {
       setLoading(false);
     }
@@ -149,19 +129,17 @@ export const usePagination = (apiCall, pageSize = 10, dependencies = []) => {
     try {
       setLoading(true);
       setError(null);
-      
-      const response = await apiCall({
-        page,
-        pageSize,
-        ...dependencies.reduce((acc, dep, index) => {
-          acc[`param${index}`] = dep;
-          return acc;
-        }, {})
-      }, token);
-      
+
+      const params = dependencies.reduce((acc, dep, index) => {
+        acc[`param${index}`] = dep;
+        return acc;
+      }, { page, pageSize });
+
+      const response = await apiCall(params, token);
+
       if (response.success) {
         setData(response.data.items || response.data);
-        setTotalPages(response.data.totalPages || Math.ceil(response.data.total / pageSize));
+        setTotalPages(response.data.totalPages || Math.ceil((response.data.total || response.data.length) / pageSize));
         setTotalItems(response.data.total || response.data.length);
         setCurrentPage(page);
       } else {
@@ -176,25 +154,7 @@ export const usePagination = (apiCall, pageSize = 10, dependencies = []) => {
 
   useEffect(() => {
     fetchPage(1);
-  }, dependencies);
-
-  const nextPage = () => {
-    if (currentPage < totalPages) {
-      fetchPage(currentPage + 1);
-    }
-  };
-
-  const prevPage = () => {
-    if (currentPage > 1) {
-      fetchPage(currentPage - 1);
-    }
-  };
-
-  const goToPage = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      fetchPage(page);
-    }
-  };
+  }, dependencies); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
     data,
@@ -203,9 +163,9 @@ export const usePagination = (apiCall, pageSize = 10, dependencies = []) => {
     currentPage,
     totalPages,
     totalItems,
-    nextPage,
-    prevPage,
-    goToPage,
+    nextPage: () => currentPage < totalPages && fetchPage(currentPage + 1),
+    prevPage: () => currentPage > 1 && fetchPage(currentPage - 1),
+    goToPage: (page) => page >= 1 && page <= totalPages && fetchPage(page),
     refetch: () => fetchPage(currentPage),
     hasNextPage: currentPage < totalPages,
     hasPrevPage: currentPage > 1
@@ -221,26 +181,19 @@ export const useDebounceApi = (apiCall, delay = 300) => {
   const [error, setError] = useState(null);
   const [debouncedValue, setDebouncedValue] = useState('');
   const { token } = useAuth();
-
   const [debounceTimer, setDebounceTimer] = useState(null);
 
   const debouncedSearch = useCallback((searchTerm, ...args) => {
-    if (debounceTimer) {
-      clearTimeout(debounceTimer);
-    }
+    if (debounceTimer) clearTimeout(debounceTimer);
 
     setLoading(true);
-    
+
     const timer = setTimeout(async () => {
       try {
         setError(null);
         const response = await apiCall(searchTerm, ...args, token);
-        
-        if (response.success) {
-          setData(response.data);
-        } else {
-          setError(response.message || 'Search failed');
-        }
+        if (response.success) setData(response.data);
+        else setError(response.message || 'Search failed');
       } catch (err) {
         setError(err.message || 'An error occurred');
       } finally {
@@ -253,11 +206,7 @@ export const useDebounceApi = (apiCall, delay = 300) => {
   }, [apiCall, delay, token, debounceTimer]);
 
   useEffect(() => {
-    return () => {
-      if (debounceTimer) {
-        clearTimeout(debounceTimer);
-      }
-    };
+    return () => debounceTimer && clearTimeout(debounceTimer);
   }, [debounceTimer]);
 
   return {
@@ -287,44 +236,31 @@ export const useFileUpload = (uploadEndpoint, options = {}) => {
 
       const formData = new FormData();
       formData.append('file', file);
-      
-      // Add additional data
-      Object.keys(additionalData).forEach(key => {
-        formData.append(key, additionalData[key]);
-      });
+      Object.keys(additionalData).forEach(key => formData.append(key, additionalData[key]));
 
       const response = await fetch(uploadEndpoint, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        body: formData,
-        // Note: Don't set Content-Type header, let browser set it with boundary
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
       });
 
       const result = await response.json();
 
       if (response.ok) {
         setProgress(100);
-        if (options.onSuccess) {
-          options.onSuccess(result);
-        }
+        options.onSuccess && options.onSuccess(result);
         return { success: true, data: result };
       } else {
-        const errorMsg = result.message || 'Upload failed';
-        setError(errorMsg);
-        if (options.onError) {
-          options.onError(errorMsg);
-        }
-        return { success: false, error: errorMsg };
+        const errMsg = result.message || 'Upload failed';
+        setError(errMsg);
+        options.onError && options.onError(errMsg);
+        return { success: false, error: errMsg };
       }
     } catch (err) {
-      const errorMsg = err.message || 'Upload failed';
-      setError(errorMsg);
-      if (options.onError) {
-        options.onError(errorMsg);
-      }
-      return { success: false, error: errorMsg };
+      const errMsg = err.message || 'Upload failed';
+      setError(errMsg);
+      options.onError && options.onError(errMsg);
+      return { success: false, error: errMsg };
     } finally {
       setLoading(false);
     }
@@ -335,10 +271,7 @@ export const useFileUpload = (uploadEndpoint, options = {}) => {
     loading,
     progress,
     error,
-    reset: () => {
-      setProgress(0);
-      setError(null);
-    }
+    reset: () => { setProgress(0); setError(null); }
   };
 };
 
@@ -354,18 +287,13 @@ export const usePolling = (apiCall, interval = 5000, dependencies = []) => {
 
   const fetchData = useCallback(async () => {
     try {
-      if (!loading) {
-        setLoading(true);
-      }
+      if (!loading) setLoading(true);
       setError(null);
-      
+
       const response = await apiCall(...dependencies, token);
-      
-      if (response.success) {
-        setData(response.data);
-      } else {
-        setError(response.message || 'Request failed');
-      }
+
+      if (response.success) setData(response.data);
+      else setError(response.message || 'Request failed');
     } catch (err) {
       setError(err.message || 'An error occurred');
     } finally {
@@ -375,32 +303,20 @@ export const usePolling = (apiCall, interval = 5000, dependencies = []) => {
 
   useEffect(() => {
     let intervalId;
-
     if (isPolling) {
-      // Fetch immediately
       fetchData();
-      
-      // Set up polling
       intervalId = setInterval(fetchData, interval);
     }
-
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
+    return () => intervalId && clearInterval(intervalId);
   }, [isPolling, fetchData, interval]);
-
-  const startPolling = () => setIsPolling(true);
-  const stopPolling = () => setIsPolling(false);
 
   return {
     data,
     loading,
     error,
     isPolling,
-    startPolling,
-    stopPolling,
+    startPolling: () => setIsPolling(true),
+    stopPolling: () => setIsPolling(false),
     refetch: fetchData
   };
 };
